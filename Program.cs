@@ -11,24 +11,26 @@ app.MapGet("/AddHeader", (HttpResponse response) => response.Headers.Add("Teste"
 
 app.MapPost("/products", (Product product) => {
    ProductRepository.Add(product);
-    return StatusCodes.Status200OK;
+    return Results.Created($"/products/{product.Code}",product.Code);
 });
 
 app.MapGet("/products/{Code}", ([FromRoute] string code) => {
     var product = ProductRepository.GetBy(code);
-    return product;
+    if(product != null)
+        return Results.Ok(product);
+    return Results.NotFound();
 });
 
 app.MapPut("/products", (Product product) => {
     var productSaved = ProductRepository.GetBy(product.Code);
     productSaved.name = product.name;
-    return StatusCodes.Status200OK;
+    return Results.Ok();
 });
 
 app.MapDelete("/products/{Code}", ([FromRoute] string code) => {
     var productSaved = ProductRepository.GetBy(code);
     ProductRepository.Delete(productSaved);
-    return "Sucesso";
+    return Results.Ok();
 });
 
 app.MapGet("/GetProductByHeader", (HttpRequest request) => {
