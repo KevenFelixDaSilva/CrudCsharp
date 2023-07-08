@@ -9,23 +9,23 @@ app.MapPost("/user", () => new {name = "keven", age = 12});
 
 app.MapGet("/AddHeader", (HttpResponse response) => response.Headers.Add("Teste","Keven felix"));
 
-app.MapPost("/SaveProduct", (Product product) => {
+app.MapPost("/products", (Product product) => {
    ProductRepository.Add(product);
     return StatusCodes.Status200OK;
 });
 
-app.MapGet("/GetProduct/{Code}", ([FromRoute] string code) => {
+app.MapGet("/products/{Code}", ([FromRoute] string code) => {
     var product = ProductRepository.GetBy(code);
     return product;
 });
 
-app.MapPut("/EditProduct", (Product product) => {
+app.MapPut("/products", (Product product) => {
     var productSaved = ProductRepository.GetBy(product.Code);
     productSaved.name = product.name;
     return StatusCodes.Status200OK;
 });
 
-app.MapDelete("/DeleteProduct/{Code}", ([FromRoute] string code) => {
+app.MapDelete("/products/{Code}", ([FromRoute] string code) => {
     var productSaved = ProductRepository.GetBy(code);
     ProductRepository.Delete(productSaved);
     return "Sucesso";
