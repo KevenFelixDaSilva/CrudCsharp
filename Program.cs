@@ -39,9 +39,11 @@ app.MapGet("/GetProductByHeader", (HttpRequest request) => {
     return request.Headers["product-code"].ToString();
 });
 
-app.MapGet("/Configuration/Database", (IConfiguration configuration) => {
-    return Results.Ok($"{configuration["Database:connection"]}/{configuration["Database:Port"]}");
-});
+if(app.Environment.IsDevelopment()){
+    app.MapGet("/Configuration/Database", (IConfiguration configuration) => {
+        return Results.Ok($"{configuration["Database:connection"]}/{configuration["Database:Port"]}");
+    });
+}
 
 app.Run();
 

@@ -24,3 +24,4 @@ C:\Users\keven\source\repos\CursoApiC#\obj\Debug\net7.0\refint\CursoApiC#.dll
 C:\Users\keven\source\repos\CursoApiC#\obj\Debug\net7.0\CursoApiC#.pdb
 C:\Users\keven\source\repos\CursoApiC#\obj\Debug\net7.0\CursoApiC#.genruntimeconfig.cache
 C:\Users\keven\source\repos\CursoApiC#\obj\Debug\net7.0\ref\CursoApiC#.dll
+C:\Users\keven\source\repos\CursoApiC#\bin\Debug\net7.0\appsettings.Staging.json
