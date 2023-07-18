@@ -1,22 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddSqlServer<ApplicationDbContext>(builder.Configuration["Database:SqlServer"]);
 
 var app = builder.Build();
 var configuration = app.Configuration;
 ProductRepository.Init(configuration);
 
-app.MapGet("/", () => "Hello World!");
-
-app.MapPost("/user", () => new {name = "keven", age = 12});
-
-app.MapGet("/AddHeader", (HttpResponse response) => response.Headers.Add("Teste","Keven felix"));
-
-app.MapPost("/products", (Product product) => {
-   ProductRepository.Add(product);
-    return Results.Created($"/products/{product.Code}",product.Code);
+app.MapPost("/products", (ProductRequest productRequest, ApplicationDbContext context) => {
+    var category = context.Categories.Where(c => c.Id == productRequest.CategoryId).First();
+    var product = new Product{
+        Code = productRequest.Code,
+        name = productRequest.name,
+        Description = productRequest.Description,
+        Category = category
+    };
+   context.Products.Add(product);
+   context.SaveChanges();
+    return Results.Created($"/products/{product.Id}",product.Id);
 });
 
 app.MapGet("/products/{Code}", ([FromRoute] string code) => {
@@ -49,59 +50,3 @@ if(app.Environment.IsDevelopment()){
 }
 
 app.Run();
-
-public static class ProductRepository{
-    public static List<Product> Products { get; set; } = new List<Product>();
-
-    public static void Init(IConfiguration configuration){
-        var products = configuration.GetSection("Products").Get<List<Product>>();
-        Products = products;
-    }
-
-    public static void Add(Product product){          
-        Products.Add(product);
-    }
-
-    public static Product GetBy(string code){
-        return Products.FirstOrDefault(p => p.Code == code);
-    }
-
-    public static void Delete(Product product){
-        Products.Remove(product);
-    }
-}
-
-public class Category{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class Tag{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int ProductId { get; set; }
-}
-
-public class Product{
-    public int Id { get; set; }
-    public string Code {get; set;}
-    public string name {get; set;}
-    public string Description { get; set; }
-    public int CategoryId { get; set; }
-    public Category Category { get; set; }
-    public List<Tag> Tags { get; set; }
-}
-
-public class ApplicationDbContext:DbContext {
-
-    public DbSet<Product> Products { get; set;}
-
-    protected override void OnModelCreating(ModelBuilder Builder)
-    {
-        Builder.Entity<Product>()
-            .Property(p => p.Description).HasMaxLength(500).IsRequired(false);
-    }
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlServer("Server=localhost;Database=Products;User Id=sa;Password=@Sql2022;MultipleActiveResultSets=True;Encrypt=YES;TrustServerCertificate=YES;");
-    
-}
