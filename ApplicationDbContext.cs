@@ -12,7 +12,7 @@ public class ApplicationDbContext:DbContext {
         Builder.Entity<Product>()
             .Property(p => p.Description).HasMaxLength(500).IsRequired(false);
         Builder.Entity<Product>()
-            .Property(p => p.name).HasMaxLength(120).IsRequired(false);
+            .Property(p => p.Name).HasMaxLength(120).IsRequired(false);
         Builder.Entity<Product>()
             .Property(p => p.Code).HasMaxLength(20).IsRequired(false);
         Builder.Entity<Category>()
